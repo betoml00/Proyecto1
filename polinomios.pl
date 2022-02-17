@@ -17,6 +17,8 @@ poly_prod(Ms,[N|Ns], Xs2) :-
 
 % Esto es un saludo al Fer.
 
+
+% Otra prueba de Beto.
 /*
 ?- poly_prod([1,2,3,4],[5,6,7],Xs).
 Xs = [5.0, 16.0, 34.0, 52, 45, 28] ;
