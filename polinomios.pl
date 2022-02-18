@@ -48,7 +48,10 @@ eval_pol([Ca|A],X,Res):-
     eval_pol(A,X,Temp),
     Res is (Temp*X)+Ca.
 
-%ONE HOT
+%ONE HOT - para usar para combinar? 
+%Para hacer polinomios [0,0,0,3,0] podriamos
+%hacer prod_escalar([0,0,0,1,0],3).
+
 %combina(i,i,o), combina(i,i,i)
 combina([],Lista,Lista) :-!. %caso base
 combina([X|Lista1],Lista2,[X|Lista3]):-
