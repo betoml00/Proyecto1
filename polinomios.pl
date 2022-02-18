@@ -28,7 +28,7 @@ producto_Esc_pol([Ca|A], Esc, [Cc|C]) :-
 
 %PRODUCTO
 %Si B es vacio el producto es vacio.
-producto_pol(_,[],[]).
+producto_pol(_,[],[]):-!.
 %Si son no vacios
 producto_pol(A,[Cb|B], C) :-
    producto_pol(A,B, Rec), %quitamos cabeza de B y llamamos recursivamente.
@@ -37,7 +37,7 @@ producto_pol(A,[Cb|B], C) :-
 
 %GRADO
 %Basicamente la longitud de la lista
-grado_pol([],0).
+grado_pol([],-1). %suponiendo que grado indefinido = -1.
 grado_pol([_|A],Grad):-
     grado_pol(A,Temp),
     Grad is Temp+1.
@@ -48,6 +48,57 @@ eval_pol([Ca|A],X,Res):-
     eval_pol(A,X,Temp),
     Res is (Temp*X)+Ca.
 
+%ONE HOT
+%combina(i,i,o), combina(i,i,i)
+combina([],Lista,Lista) :-!. %caso base
+combina([X|Lista1],Lista2,[X|Lista3]):-
+    combina(Lista1,Lista2,Lista3).
+
+ceros(A,0,A):-
+    !.
+ceros(A,1,[0|A]):-
+    !.
+ceros(A,N,[0|Resto]):-
+    Ntemp is N-1,
+    ceros(A,Ntemp,Resto).
+
+one_hot(N,Target,Res):-
+    ceros([],Target-1,Primera),
+    combina(Primera,[1],Temp),
+    ceros([],N-Target,Segunda),
+    combina(Temp,Segunda,Res).
+
+
+
+
+%COMPOSICION - TODAVIA NO SIRVE
+%Tenemos que hacer un polinomio con Ca para sumar
+comp_pol([],_,[]).
+comp_pol([Ca|A],B,C):-
+    comp_pol(A,B,Temp),
+    write(Ca),write(Temp),
+    producto_pol(B,Temp,Producto),
+    write(Producto),
+    suma_pol(Ca,Producto,C).
+
 %DIFERENCIAR
+%La idea es implementar algo parecido al de java.
+%cada coeficiente nuevo es indice*coefsViejos[indice]
+%donde 1<=indice<=coeficientesViejos.length
+
+%Funciones "wrappers"
+%Si el polinomio es vacio su derivada tambien.
 dif_pol([],[]).
-dif_pol([Ca|A],)
+%Si es no vacio descartamos el primer elemento, "inicializamos" el indice en 1,
+% y llamamos a la funcion "helper".
+dif_pol([_|A],Res):-
+    dif_pol(A,1,Res).
+
+%Si el polinomio es vacio su derivada tambien, sin importar el indice.
+dif_pol([],_,[]).
+%Agregamos al polinomio resultado indice*coefsViejos[indice] y llamamos recursivamente.
+dif_pol([Ca|A],Indice,[Cc|C]):-
+    Cc is (Ca*Indice),
+    dif_pol(A,Indice+1, C).
+
+%dif_pol([1,2,3,4],C).
