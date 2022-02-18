@@ -24,3 +24,5 @@ poly_prod(Ms,[N|Ns], Xs2) :-
 Xs = [5.0, 16.0, 34.0, 52, 45, 28] ;
 false.
 */
+
+% Comentario
