@@ -1,5 +1,5 @@
 %SUMA
-%Si B es vacio TODO comentar
+%Si B es vacio la suma es igual a A
 suma_pol(A,[],A) :- A = [_|_].
 %Si A es vacio la suma es igual a B.
 suma_pol([],B,B).
@@ -48,7 +48,7 @@ eval_pol([Ca|A],X,Res):-
     eval_pol(A,X,Temp),
     Res is (Temp*X)+Ca.
 
-%ONE HOT - para usar para combinar? 
+%ONE HOT - para usar para combinar?
 %Para hacer polinomios [0,0,0,3,0] podriamos
 %hacer prod_escalar([0,0,0,1,0],3).
 
