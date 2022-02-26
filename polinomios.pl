@@ -1,5 +1,5 @@
 %SUMA
-%Si B es vacio TODO comentar
+%Si B es vacio la suma es igual a A
 suma_pol(A,[],A) :- A = [_|_].
 %Si A es vacio la suma es igual a B.
 suma_pol([],B,B):- !.
