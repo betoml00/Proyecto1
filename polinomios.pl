@@ -50,9 +50,9 @@ eval_pol([Ca|A],X,Res):-
     Res is (Temp*X)+Ca.
 
 
-%COMPOSICION - TODAVIA NO SIRVE
-%Tenemos que hacer un polinomio con Ca para sumar
+%COMPOSICION
 comp_pol([],_,[]):-!.
+%Usamos la definicion recursiva de Horner
 comp_pol([Ca|A],B,C):-
     comp_pol(A,B,Temp),
     producto_pol(B,Temp,Producto),
