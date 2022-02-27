@@ -81,3 +81,38 @@ dif_pol([Ca|A],Indice,[Cc|C]):-
     dif_pol(A,Indice+1, C).
 
 %dif_pol([1,2,3,4],C).
+
+% TO STRING
+% toString(i, i):
+%funcion wrapper (publica)
+toString(Pol):- %pregunta prof: tiene que regresar o solo imprimir?
+    toString(Pol,0,''),
+    !.
+%Caso base: recorrimos toda la lista construyendo el string en Res.
+%Entonces solo imprimimos
+toString([], Counter, Res) :-
+    write(Res),
+    !.
+
+%Si la cabeza (coeficiente actual) es cero nos saltamos la concatenacion y avanzamos.
+toString([0|T], Counter, Res):-
+    Counter2 is Counter+1,
+    toString(T,Counter2,Res),
+    !.
+
+
+toString([H|T], Counter, Res):-
+    mas(Res,M),
+    atom_concat(Res, M, Sb),
+    atom_concat(Sb, H, Sb1),
+    atom_concat(Sb1, 'x', Sb2),
+    atom_concat(Sb2, '^', Sb3),
+    atom_concat(Sb3, Counter, Este),
+    Counter2 is Counter + 1,
+    toString(T, Counter2, Este),
+    !.
+
+mas('',''):-!.
+mas(Res,' + '):-!.
+
+
