@@ -9,14 +9,11 @@ suma_pol([Ca|A], [Cb|B], [Cc|C]) :-
    suma_pol(A, B, C).
 
 %RESTA
-%Si B es vacio TODO
-resta_pol(A,[],A) :- A = [_|_].
-%Si A es vacio la suma es igual a B.
-resta_pol([],B,B):- !.
-%Para sumar dos polinomios se suman sus cabezas y llama recursivamente
-resta_pol([Ca|A], [Cb|B], [Cc|C]) :-
-   Cc is Ca-Cb,
-   resta_pol(A, B, C).
+%Negamos B usando producto escalar y despues sumamos
+resta_pol(A,B,C):-
+    producto_Esc_pol(B,-1,Bneg),
+    suma_pol(A,Bneg,C).
+
 
 %PRODUCTO ESCALAR
 %Si el polinomio es vacio su producto Esc tambien.
@@ -61,6 +58,7 @@ comp_pol([Ca|A],B,C):-
 %comp_pol([1,2,3,4],[5,0,3],C).
 
 %DIFERENCIAR
+%dif_pol(i,i), dif_pol(i,o)
 %La idea es implementar algo parecido al de java.
 %cada coeficiente nuevo es indice*coefsViejos[indice]
 %donde 1<=indice<=coeficientesViejos.length
@@ -80,17 +78,16 @@ dif_pol([Ca|A],Indice,[Cc|C]):-
     Cc is (Ca*Indice),
     dif_pol(A,Indice+1, C).
 
-%dif_pol([1,2,3,4],C).
 
 % TO STRING
-% toString(i, i):
+% toString(i)
 %funcion wrapper (publica)
 toString(Pol):- %pregunta prof: tiene que regresar o solo imprimir?
     toString(Pol,0,''),
     !.
 %Caso base: recorrimos toda la lista construyendo el string en Res.
 %Entonces solo imprimimos
-toString([], Counter, Res) :-
+toString([], _, Res) :-
     write(Res),
     !.
 
@@ -99,7 +96,7 @@ toString([0|T], Counter, Res):-
     Counter2 is Counter+1,
     toString(T,Counter2,Res),
     !.
-    
+
 %Para el coeficiente de grado cero no incluimos "x^"
 toString([H|T], 0, Res):-
     atom_concat(Res, H, Este),
@@ -118,17 +115,35 @@ toString([H|T], Counter, Res):-
     !.
 
 mas('',''):-!.
-mas(Res,' + '):-!.
+mas(_,' + '):-!.
 
 %MAIN
-p([1,2,3,4]). %???
+p([1,2,3,4]).
 q([5,0,3]).
 main:-
     p(P),
-    write(P),
+    write("p(x) = "),toString(P),nl,
     q(Q),
-    write(Q),
+    write("q(x) = "),toString(Q),
+    suma_pol(P,Q,R), %p+q
+    write("q(x) + p(x) = "),toString(R),nl,
+    producto_pol(P,Q,S), %p*q
+    write("q(x) * p(x) = "),toString(S),nl,
+    comp_pol(P,Q,T),
+    write("p(q(x)) = "), toString(T),nl,
+    resta_pol([0],P,Z), %0-p
+    write("0 - p(x) = "),toString(Z),nl, 
+    eval_pol(P,3,E), %p(3)
+    write("p(3) = "),write(E),nl,
+    dif_pol(P,D), %p'
+    write("p'(x) = "),toString(D),nl,
+    dif_pol(D,D2), %p''
+    write("p''(x) = "),toString(D2),nl,
     !.
 main.
+
+%PREGUNTAS PROF:
+% el toString tiene que imprimir o 'regresar' la cadena
+% el toString va de mayor a menor coeficiente o como lo tenemos nosotros?
 
 
