@@ -99,7 +99,12 @@ toString([0|T], Counter, Res):-
     Counter2 is Counter+1,
     toString(T,Counter2,Res),
     !.
-
+    
+%Para el coeficiente de grado cero no incluimos "x^"
+toString([H|T], 0, Res):-
+    atom_concat(Res, H, Este),
+    toString(T, 1, Este),
+    !.
 
 toString([H|T], Counter, Res):-
     mas(Res,M),
@@ -114,5 +119,16 @@ toString([H|T], Counter, Res):-
 
 mas('',''):-!.
 mas(Res,' + '):-!.
+
+%MAIN
+p([1,2,3,4]). %???
+q([5,0,3]).
+main:-
+    p(P),
+    write(P),
+    q(Q),
+    write(Q),
+    !.
+main.
 
 
