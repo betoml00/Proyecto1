@@ -1,7 +1,7 @@
 % -------- SUMA
 % Si B es vacío, la suma es igual a A.
 % suma_pol(i, i, o):
-suma_pol(A,[],A) :- A = [_|_].
+suma_pol(A,[],A) :- !.
 % Si A es vacío, la suma es igual a B.
 suma_pol([],B,B):- !.
 % Para sumar dos polinomios, se suman sus cabezas y llama recursivamente.
@@ -34,7 +34,7 @@ producto_pol(_,[],[]):-!.
 producto_pol(A,[Cb|B], C) :-
    producto_pol(A,B, Rec), %quitamos cabeza de B y llamamos recursivamente.
    producto_Esc_pol(A, Cb, Esc), %calculamos el prod. Esc con la cabeza de B.
-   suma_pol(Esc, [0.0|Rec], C), %sumamos ambos resultados anteriores en C.
+   suma_pol(Esc, [0|Rec], C), %sumamos ambos resultados anteriores en C.
    !.
 
 % -------- GRADO
