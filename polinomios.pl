@@ -109,6 +109,10 @@ dif_pol([Ca|A],Indice,[Cc|C]):-
 terminoActual(0,_,''):-!.
 % Si nuestro índice o potencia es 0, no incluimos 'x^'
 terminoActual(Coef,0,Coef):-!.
+% Si nuestro índice o potencia es 1 incluimos solo 'x'
+terminoActual(Coef,1,Res):-
+    atom_concat(Coef,'x',Res),
+    !.
 % Si los anteriores no se cumplen, entonces incluimos 'x^{Indice}'
 terminoActual(Coef,Index,Res):-
     atom_concat(Coef,'x^',Sb1),
