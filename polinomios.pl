@@ -1,137 +1,136 @@
-
-%SUMA DE POLINOMIOS:
-%suma_pol(i, i, o):
-%Si B es vacio la suma es igual a A
+% -------- SUMA
+% Si B es vacío, la suma es igual a A.
+% suma_pol(i, i, o):
 suma_pol(A,[],A) :- A = [_|_].
-%Si A es vacio la suma es igual a B.
+% Si A es vacío, la suma es igual a B.
 suma_pol([],B,B):- !.
-%Para sumar dos polinomios se suman sus cabezas y llama recursivamente
+% Para sumar dos polinomios, se suman sus cabezas y llama recursivamente.
 suma_pol([Ca|A], [Cb|B], [Cc|C]) :-
    Cc is Ca+Cb,
    suma_pol(A, B, C).
 
-%RESTA DE POLINOMIOS:
-%resta_pol(i, i, o):
-%Negamos B usando producto escalar y despues sumamos
+% -------- RESTA
+% Negamos B usando producto escalar y después sumamos
+% resta_pol(i, i, o):
 resta_pol(A,B,C):-
     producto_Esc_pol(B,-1,Bneg),
     suma_pol(A,Bneg,C).
 
 
-%PRODUCTO ESCALAR:
-%producto_Esc_pol(i, i, o):
-%Si el polinomio es vacio su producto Esc tambien.
+% -------- PRODUCTO ESCALAR
+% Si el polinomio es vacío, su producto escalara también.
+% producto_Esc_pol(i, i, o), producto_Esc_pol(i, i, i):
 producto_Esc_pol([],_,[]):-!.
-%Si es no vacio, se multiplica su cabeza con el Esc y llama recursivamente.
+% Si es no vacío, se multiplica su cabeza con el escalar y llama recursivamente.
 producto_Esc_pol([Ca|A], Esc, [Cc|C]) :-
    Cc is Ca*Esc,
    producto_Esc_pol(A, Esc, C).
 
-%PRODUCTO DE POLINOMIOS:
-%producto_pol(i, i, o):
-%Si B es vacio el producto es vacio.
+% -------- PRODUCTO
+% Si B es vacío, el producto es vacío.
+% producto_pol(i, i, o):
 producto_pol(_,[],[]):-!.
-%Si son no vacios
+% Si son no vacíos
 producto_pol(A,[Cb|B], C) :-
    producto_pol(A,B, Rec), %quitamos cabeza de B y llamamos recursivamente.
    producto_Esc_pol(A, Cb, Esc), %calculamos el prod. Esc con la cabeza de B.
    suma_pol(Esc, [0.0|Rec], C), %sumamos ambos resultados anteriores en C.
    !.
 
-%GRADO DE UN POLINOMIO:
-%grado(i, o):
-%La posicion del ultimo coeficiente no cero
-grado(Pol,Grado):- %wrapper (funcion publica)
+% -------- GRADO
+% La posición del último coeficiente no cero
+% grado(i, o), grado(i, i, i, o):
+grado(Pol,Grado):- % wrapper (función pública)
     grado(Pol,0,0,Grado),
     !.
-%Caso base: Si el pol. es vacio el grado es el indice del ultimo coef. no cero
+% Caso base: Si el pol. es vacío, el grado es el índice del último coef. no cero
 grado([],_,Ultimo,Grado):-
     Grado is Ultimo,
     !.
-%Si la cabeza es cero solo incrementamos el indice y recursamos.
+% Si la cabeza es cero, sólo incrementamos el índice y llamamos recursivamente.
 grado([0|Pol],Index,Ultimo,Grado):-
     Index2 is Index+1,
     grado(Pol,Index2,Ultimo,Grado),
     !.
-%Si no es cero el ultimo ahora es el indice actual y recursamos.
+% Si no es cero, el último ahora es el índice actual y recursamos.
 grado([_|Pol],Index,_,Grado):-
     Index2 is Index+1,
     grado(Pol,Index2,Index,Grado),
     !.
 
-%EVALUAR UN POLINOMIO:
-%eval_pol(i, i, o):
-%Caso base:
+% -------- EVALUAR
+% eval_pol(i, i, o):
+% Caso base:
 eval_pol([],_,0).
 eval_pol([Ca|A],X,Res):-
     eval_pol(A,X,Temp),
     Res is (Temp*X)+Ca.
 
 
-%COMPOSICION:
-%comp_pol(i, i, o):
+% -------- COMPOSICIÓN
+% comp_pol(i, i, o):
 comp_pol([],_,[]):-!.
-%Usamos la definicion recursiva de Horner
+% Usamos la definición recursiva de Horner
 comp_pol([Ca|A],B,C):-
     comp_pol(A,B,Temp),
     producto_pol(B,Temp,Producto),
     suma_pol([Ca],Producto,C),
     !.
 
-%DIFERENCIAR:
-%dif_pol(i,i), dif_pol(i,o):
-%La idea es implementar algo parecido al de java.
-%cada coeficiente nuevo es indice*coefsViejos[indice]
-%donde 1<=indice<=coeficientesViejos.length
+% -------- DIFERENCIAR
+% dif_pol(i,i), dif_pol(i,o):
+% La idea es implementar algo parecido al de java.
+% cada coeficiente nuevo es indice*coefsViejos[indice]
+% donde 1<=indice<=coeficientesViejos.length
 
-%Funciones "wrappers"
-%Si el polinomio es vacio su derivada tambien.
+% Funciones "wrappers"
+% Si el polinomio es vacío, su derivada también.
 dif_pol([],[]).
-%Si es no vacio descartamos el primer elemento, "inicializamos" el indice en 1,
+% Si es no vacío descartamos el primer elemento, "inicializamos" el índice en 1
 % y llamamos a la funcion "helper".
 dif_pol([_|A],Res):-
     dif_pol(A,1,Res).
 
-%Si el polinomio es vacio su derivada tambien, sin importar el indice.
+% Si el polinomio es vacío, su derivada también, sin importar el índice.
 dif_pol([],_,[]).
-%Agregamos al polinomio resultado indice*coefsViejos[indice] y llamamos recursivamente.
+% Agregamos al polinomio resultado indice*coefsViejos[indice] y llamamos recursivamente.
 dif_pol([Ca|A],Indice,[Cc|C]):-
     Cc is (Ca*Indice),
     dif_pol(A,Indice+1, C).
 
 
-% TO STRING:
+% -------- TO STRING
 % toString(i):
-%funcion wrapper (publica)
+% función wrapper (publica)
 
-%Predicados a utilizar
-%Determina si agregamos 'x^{Index}' al str dependiedo del coeficiente e indice del termino.
-%Si el coeficiente es cero nuestra representacion es ''.
+% Predicados a utilizar
+% Determina si agregamos 'x^{Index}' al str dependiedo del coeficiente e índice del término.
+% Si el coeficiente es cero, nuestra representación es ''.
 terminoActual(0,_,''):-!.
-%Si nuestro indice o potencia es 0 no incluimos 'x^'
+% Si nuestro índice o potencia es 0, no incluimos 'x^'
 terminoActual(Coef,0,Coef):-!.
-%Si los anteriores no se cumplen entonces incluimos 'x^{Indice}'
+% Si los anteriores no se cumplen, entonces incluimos 'x^{Indice}'
 terminoActual(Coef,Index,Res):-
     atom_concat(Coef,'x^',Sb1),
     atom_concat(Sb1,Index,Res),
     !.
-%Determina si agregamos ' + ' al str dependiendo del str armado recursivamente y del termino actual.
+% Determina si agregamos ' + ' al str dependiendo del str armado recursivamente y del término actual.
 mas('',_,''):-!.
 mas(_,'',''):-!.
 mas(_,_,' + '):-!.
 
-%Funcion wrapper que le asigna a Res la representacion
+% Función wrapper que le asigna a Res la representación
 toString(Pol,Res):-
     toString(Pol,0,Res),
     !.
-%Funcion wrapper que imprime directamente
+% Función wrapper que imprime directamente
 toString(Pol):-
     toString(Pol,Res),
     write(Res),
     !.
-%Caso base: si lista vacia nuestra representacion es ''.
+% Caso base: si lista vacía, nuestra representación es ''.
 toString([],_,''):-!.
-%Llamamos recursivamente y concatenamos el termino actual (y el mas).
+% Llamamos recursivamente y concatenamos el término actual (y el más).
 toString([Cabeza|Pol],Index,Sb):-
     Index2 is Index+1,
     toString(Pol,Index2,Rec),
@@ -142,7 +141,7 @@ toString([Cabeza|Pol],Index,Sb):-
     !.
 
 
-%MAIN
+% -------- MAIN
 p([1,2,3,4]).
 q([5,0,3]).
 main:-
