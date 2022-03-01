@@ -13,18 +13,18 @@ suma_pol([Ca|A], [Cb|B], [Cc|C]) :-
 % Negamos B usando producto escalar y después sumamos
 % resta_pol(i, i, o):
 resta_pol(A,B,C):-
-    producto_Esc_pol(B,-1,Bneg),
+    producto_esc_pol(B,-1,Bneg),
     suma_pol(A,Bneg,C).
 
 
 % -------- PRODUCTO ESCALAR
 % Si el polinomio es vacío, su producto escalara también.
-% producto_Esc_pol(i, i, o), producto_Esc_pol(i, i, i):
-producto_Esc_pol([],_,[]):-!.
+% producto_esc_pol(i, i, o), producto_esc_pol(i, i, i):
+producto_esc_pol([],_,[]):-!.
 % Si es no vacío, se multiplica su cabeza con el escalar y llama recursivamente.
-producto_Esc_pol([Ca|A], Esc, [Cc|C]) :-
+producto_esc_pol([Ca|A], Esc, [Cc|C]) :-
    Cc is Ca*Esc,
-   producto_Esc_pol(A, Esc, C).
+   producto_esc_pol(A, Esc, C).
 
 % -------- PRODUCTO
 % Si B es vacío, el producto es vacío.
@@ -33,70 +33,71 @@ producto_pol(_,[],[]):-!.
 % Si son no vacíos
 producto_pol(A,[Cb|B], C) :-
    producto_pol(A,B, Rec), %quitamos cabeza de B y llamamos recursivamente.
-   producto_Esc_pol(A, Cb, Esc), %calculamos el prod. Esc con la cabeza de B.
+   producto_esc_pol(A, Cb, Esc), %calculamos el prod. Esc con la cabeza de B.
    suma_pol(Esc, [0|Rec], C), %sumamos ambos resultados anteriores en C.
    !.
 
 % -------- GRADO
 % La posición del último coeficiente no cero
-% grado(i, o), grado(i, i, i, o):
-grado(Pol,Grado):- % wrapper (función pública)
-    grado(Pol,0,0,Grado),
+% grado_pol(i, o), grado_pol(i, i, i, o):
+grado_pol(Pol,Grado):- % wrapper (función pública)
+    grado_pol(Pol,0,0,Grado),
     !.
-% Caso base: Si el pol. es vacío, el grado es el índice del último coef. no cero
-grado([],_,Ultimo,Grado):-
+% Caso base: Si el pol. es vacío, el Grado es el índice del último coef. no cero
+grado_pol([],_,Ultimo,Grado):-
     Grado is Ultimo,
     !.
 % Si la cabeza es cero, sólo incrementamos el índice y llamamos recursivamente.
-grado([0|Pol],Index,Ultimo,Grado):-
+grado_pol([0|Pol],Index,Ultimo,Grado):-
     Index2 is Index+1,
-    grado(Pol,Index2,Ultimo,Grado),
+    grado_pol(Pol,Index2,Ultimo,Grado),
     !.
 % Si no es cero, el último ahora es el índice actual y recursamos.
-grado([_|Pol],Index,_,Grado):-
+grado_pol([_|Pol],Index,_,Grado):-
     Index2 is Index+1,
-    grado(Pol,Index2,Index,Grado),
+    grado_pol(Pol,Index2,Index,Grado),
     !.
 
 % -------- EVALUAR
-% eval_pol(i, i, o):
-% Caso base:
-eval_pol([],_,0).
-eval_pol([Ca|A],X,Res):-
-    eval_pol(A,X,Temp),
+% evaluar_pol(i, i, o):
+% Caso base: La lista es vacia, nuestra respuesta 0.
+evaluar_pol([],_,0).
+%Evaluamos con Horner.
+evaluar_pol([Ca|A],X,Res):-
+    evaluar_pol(A,X,Temp),
     Res is (Temp*X)+Ca.
 
 
 % -------- COMPOSICIÓN
-% comp_pol(i, i, o):
-comp_pol([],_,[]):-!.
+% composicion_pol(i, i, o):
+composicion_pol([],_,[]):-!.
 % Usamos la definición recursiva de Horner
-comp_pol([Ca|A],B,C):-
-    comp_pol(A,B,Temp),
+composicion_pol([Ca|A],B,C):-
+    composicion_pol(A,B,Temp),
     producto_pol(B,Temp,Producto),
     suma_pol([Ca],Producto,C),
     !.
 
 % -------- DIFERENCIAR
-% dif_pol(i,i), dif_pol(i,o):
+% diferenciar_pol(i,i), diferenciar_pol(i,o):
 % La idea es implementar algo parecido al de java.
 % cada coeficiente nuevo es indice*coefsViejos[indice]
 % donde 1<=indice<=coeficientesViejos.length
 
 % Funciones "wrappers"
 % Si el polinomio es vacío, su derivada también.
-dif_pol([],[]).
+diferenciar_pol([],[]).
 % Si es no vacío descartamos el primer elemento, "inicializamos" el índice en 1
 % y llamamos a la funcion "helper".
-dif_pol([_|A],Res):-
-    dif_pol(A,1,Res).
+diferenciar_pol([_|A],Res):-
+    diferenciar_pol(A,1,Res).
 
 % Si el polinomio es vacío, su derivada también, sin importar el índice.
-dif_pol([],_,[]).
+diferenciar_pol([],_,[]).
 % Agregamos al polinomio resultado indice*coefsViejos[indice] y llamamos recursivamente.
-dif_pol([Ca|A],Indice,[Cc|C]):-
+diferenciar_pol([Ca|A],Indice,[Cc|C]):-
     Cc is (Ca*Indice),
-    dif_pol(A,Indice+1, C).
+    diferenciar_pol(A,Indice+1, C).
 
 
 % -------- TO STRING
@@ -157,15 +158,15 @@ main:-
     write("q(x) + p(x) = "),toString(R),nl,
     producto_pol(P,Q,S), %p*q
     write("q(x) * p(x) = "),toString(S),nl,
-    comp_pol(P,Q,T),
+    composicion_pol(P,Q,T),
     write("p(q(x)) = "), toString(T),nl,
     resta_pol([0],P,Z), %0-p
     write("0 - p(x) = "),toString(Z),nl,
-    eval_pol(P,3,E), %p(3)
+    evaluar_pol(P,3,E), %p(3)
     write("p(3) = "),write(E),nl,
-    dif_pol(P,D), %p'
+    diferenciar_pol(P,D), %p'
     write("p'(x) = "),toString(D),nl,
-    dif_pol(D,D2), %p''
+    diferenciar_pol(D,D2), %p''
     write("p''(x) = "),toString(D2),nl,
     !.
 main.
