@@ -161,5 +161,3 @@ main.
 %PREGUNTAS PROF:
 % el toString tiene que imprimir o 'regresar' la cadena
 % el toString va de mayor a menor coeficiente o como lo tenemos nosotros?
-
-
