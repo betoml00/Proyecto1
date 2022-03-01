@@ -49,7 +49,7 @@ grado([0|Pol],Index,Ultimo,Grado):-
     grado(Pol,Index2,Ultimo,Grado),
     !.
 %si no es cero setteamos ultimo al indice actual
-grado([Cabeza|Pol],Index,Ultimo,Grado):-
+grado([_|Pol],Index,_,Grado):-
     Index2 is Index+1,
     grado(Pol,Index2,Index,Grado),
     !.
