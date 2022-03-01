@@ -1,3 +1,4 @@
+
 %SUMA
 %Si B es vacio la suma es igual a A
 suma_pol(A,[],A) :- A = [_|_].
@@ -18,7 +19,7 @@ resta_pol(A,B,C):-
 %PRODUCTO ESCALAR
 %Si el polinomio es vacio su producto Esc tambien.
 producto_Esc_pol([],_,[]):-!.
-%Si es no vacio, se multiplica su cabeza con el Esc y llama rec.
+%Si es no vacio, se multiplica su cabeza con el Esc y llama recursivamente.
 producto_Esc_pol([Ca|A], Esc, [Cc|C]) :-
    Cc is Ca*Esc,
    producto_Esc_pol(A, Esc, C).
@@ -31,32 +32,30 @@ producto_pol(A,[Cb|B], C) :-
    producto_pol(A,B, Rec), %quitamos cabeza de B y llamamos recursivamente.
    producto_Esc_pol(A, Cb, Esc), %calculamos el prod. Esc con la cabeza de B.
    suma_pol(Esc, [0.0|Rec], C), %sumamos ambos resultados anteriores en C.
-   !. 
+   !.
 
 %GRADO
 %La posicion del ultimo coeficiente no cero
-
 grado(Pol,Grado):- %wrapper (funcion publica)
     grado(Pol,0,0,Grado),
     !.
-%si pol. vacio el grado es el indice del ultimo coef. no cero
-grado([],_,Ultimo,Grado):- 
+%Caso base: Si el pol. es vacio el grado es el indice del ultimo coef. no cero
+grado([],_,Ultimo,Grado):-
     Grado is Ultimo,
-    !.  
-%si la cabeza es cero solo incrementamos el indice
+    !.
+%Si la cabeza es cero solo incrementamos el indice y recursamos.
 grado([0|Pol],Index,Ultimo,Grado):-
     Index2 is Index+1,
     grado(Pol,Index2,Ultimo,Grado),
     !.
-%si no es cero setteamos ultimo al indice actual
+%Si no es cero el ultimo ahora es el indice actual y recursamos.
 grado([_|Pol],Index,_,Grado):-
     Index2 is Index+1,
     grado(Pol,Index2,Index,Grado),
     !.
 
-
-
 %EVALUAR
+%Caso base:
 eval_pol([],_,0).
 eval_pol([Ca|A],X,Res):-
     eval_pol(A,X,Temp),
@@ -71,7 +70,6 @@ comp_pol([Ca|A],B,C):-
     producto_pol(B,Temp,Producto),
     suma_pol([Ca],Producto,C),
     !.
-%comp_pol([1,2,3,4],[5,0,3],C).
 
 %DIFERENCIAR
 %dif_pol(i,i), dif_pol(i,o)
@@ -98,40 +96,44 @@ dif_pol([Ca|A],Indice,[Cc|C]):-
 % TO STRING
 % toString(i)
 %funcion wrapper (publica)
-toString(Pol):- %pregunta prof: tiene que regresar o solo imprimir?
-    toString(Pol,0,''),
+
+%Predicados a utilizar
+%Determina si agregamos 'x^{Index}' al str dependiedo del coeficiente e indice del termino.
+%Si el coeficiente es cero nuestra representacion es ''.
+terminoActual(0,_,''):-!.
+%Si nuestro indice o potencia es 0 no incluimos 'x^'
+terminoActual(Coef,0,Coef):-!.
+%Si los anteriores no se cumplen entonces incluimos 'x^{Indice}'
+terminoActual(Coef,Index,Res):-
+    atom_concat(Coef,'x^',Sb1),
+    atom_concat(Sb1,Index,Res),
     !.
-%Caso base: recorrimos toda la lista construyendo el string en Res.
-%Entonces solo imprimimos
-toString([], _, Res) :-
+%Determina si agregamos ' + ' al str dependiendo del str armado recursivamente y del termino actual.
+mas('',_,''):-!.
+mas(_,'',''):-!.
+mas(_,_,' + '):-!.
+
+%Funcion wrapper que le asigna a Res la representacion
+toString(Pol,Res):-
+    toString(Pol,0,Res),
+    !.
+%Funcion wrapper que imprime directamente
+toString(Pol):-
+    toString(Pol,Res),
     write(Res),
     !.
-
-%Si la cabeza (coeficiente actual) es cero nos saltamos la concatenacion y avanzamos.
-toString([0|T], Counter, Res):-
-    Counter2 is Counter+1,
-    toString(T,Counter2,Res),
+%Caso base: si lista vacia nuestra representacion es ''.
+toString([],_,''):-!.
+%Llamamos recursivamente y concatenamos el termino actual (y el mas).
+toString([Cabeza|Pol],Index,Sb):-
+    Index2 is Index+1,
+    toString(Pol,Index2,Rec),
+    terminoActual(Cabeza,Index,TerminoActual),
+    mas(Rec,TerminoActual,M),
+    atom_concat(M,TerminoActual,Sb3),
+    atom_concat(Rec,Sb3,Sb),
     !.
 
-%Para el coeficiente de grado cero no incluimos "x^"
-toString([H|T], 0, Res):-
-    atom_concat(Res, H, Este),
-    toString(T, 1, Este),
-    !.
-
-toString([H|T], Counter, Res):-
-    mas(Res,M),
-    atom_concat(Res, M, Sb),
-    atom_concat(Sb, H, Sb1),
-    atom_concat(Sb1, 'x', Sb2),
-    atom_concat(Sb2, '^', Sb3),
-    atom_concat(Sb3, Counter, Este),
-    Counter2 is Counter + 1,
-    toString(T, Counter2, Este),
-    !.
-
-mas('',''):-!.
-mas(_,' + '):-!.
 
 %MAIN
 p([1,2,3,4]).
@@ -140,7 +142,7 @@ main:-
     p(P),
     write("p(x) = "),toString(P),nl,
     q(Q),
-    write("q(x) = "),toString(Q),
+    write("q(x) = "),toString(Q),nl,
     suma_pol(P,Q,R), %p+q
     write("q(x) + p(x) = "),toString(R),nl,
     producto_pol(P,Q,S), %p*q
@@ -148,7 +150,7 @@ main:-
     comp_pol(P,Q,T),
     write("p(q(x)) = "), toString(T),nl,
     resta_pol([0],P,Z), %0-p
-    write("0 - p(x) = "),toString(Z),nl, 
+    write("0 - p(x) = "),toString(Z),nl,
     eval_pol(P,3,E), %p(3)
     write("p(3) = "),write(E),nl,
     dif_pol(P,D), %p'
@@ -157,7 +159,3 @@ main:-
     write("p''(x) = "),toString(D2),nl,
     !.
 main.
-
-%PREGUNTAS PROF:
-% el toString tiene que imprimir o 'regresar' la cadena
-% el toString va de mayor a menor coeficiente o como lo tenemos nosotros?
