@@ -1,5 +1,6 @@
 
-%SUMA
+%SUMA DE POLINOMIOS:
+%suma_pol(i, i, o):
 %Si B es vacio la suma es igual a A
 suma_pol(A,[],A) :- A = [_|_].
 %Si A es vacio la suma es igual a B.
@@ -9,14 +10,16 @@ suma_pol([Ca|A], [Cb|B], [Cc|C]) :-
    Cc is Ca+Cb,
    suma_pol(A, B, C).
 
-%RESTA
+%RESTA DE POLINOMIOS:
+%resta_pol(i, i, o):
 %Negamos B usando producto escalar y despues sumamos
 resta_pol(A,B,C):-
     producto_Esc_pol(B,-1,Bneg),
     suma_pol(A,Bneg,C).
 
 
-%PRODUCTO ESCALAR
+%PRODUCTO ESCALAR:
+%producto_Esc_pol(i, i, o):
 %Si el polinomio es vacio su producto Esc tambien.
 producto_Esc_pol([],_,[]):-!.
 %Si es no vacio, se multiplica su cabeza con el Esc y llama recursivamente.
@@ -24,7 +27,8 @@ producto_Esc_pol([Ca|A], Esc, [Cc|C]) :-
    Cc is Ca*Esc,
    producto_Esc_pol(A, Esc, C).
 
-%PRODUCTO
+%PRODUCTO DE POLINOMIOS:
+%producto_pol(i, i, o):
 %Si B es vacio el producto es vacio.
 producto_pol(_,[],[]):-!.
 %Si son no vacios
@@ -34,7 +38,8 @@ producto_pol(A,[Cb|B], C) :-
    suma_pol(Esc, [0.0|Rec], C), %sumamos ambos resultados anteriores en C.
    !.
 
-%GRADO
+%GRADO DE UN POLINOMIO:
+%grado(i, o):
 %La posicion del ultimo coeficiente no cero
 grado(Pol,Grado):- %wrapper (funcion publica)
     grado(Pol,0,0,Grado),
@@ -54,7 +59,8 @@ grado([_|Pol],Index,_,Grado):-
     grado(Pol,Index2,Index,Grado),
     !.
 
-%EVALUAR
+%EVALUAR UN POLINOMIO:
+%eval_pol(i, i, o):
 %Caso base:
 eval_pol([],_,0).
 eval_pol([Ca|A],X,Res):-
@@ -62,7 +68,8 @@ eval_pol([Ca|A],X,Res):-
     Res is (Temp*X)+Ca.
 
 
-%COMPOSICION
+%COMPOSICION:
+%comp_pol(i, i, o):
 comp_pol([],_,[]):-!.
 %Usamos la definicion recursiva de Horner
 comp_pol([Ca|A],B,C):-
@@ -71,8 +78,8 @@ comp_pol([Ca|A],B,C):-
     suma_pol([Ca],Producto,C),
     !.
 
-%DIFERENCIAR
-%dif_pol(i,i), dif_pol(i,o)
+%DIFERENCIAR:
+%dif_pol(i,i), dif_pol(i,o):
 %La idea es implementar algo parecido al de java.
 %cada coeficiente nuevo es indice*coefsViejos[indice]
 %donde 1<=indice<=coeficientesViejos.length
@@ -93,8 +100,8 @@ dif_pol([Ca|A],Indice,[Cc|C]):-
     dif_pol(A,Indice+1, C).
 
 
-% TO STRING
-% toString(i)
+% TO STRING:
+% toString(i):
 %funcion wrapper (publica)
 
 %Predicados a utilizar
