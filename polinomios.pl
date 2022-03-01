@@ -34,11 +34,27 @@ producto_pol(A,[Cb|B], C) :-
    !. 
 
 %GRADO
-%Basicamente la longitud de la lista
-grado_pol([],-1). %suponiendo que grado indefinido = -1.
-grado_pol([_|A],Grad):-
-    grado_pol(A,Temp),
-    Grad is Temp+1.
+%La posicion del ultimo coeficiente no cero
+
+grado(Pol,Grado):- %wrapper (funcion publica)
+    grado(Pol,0,0,Grado),
+    !.
+%si pol. vacio el grado es el indice del ultimo coef. no cero
+grado([],_,Ultimo,Grado):- 
+    Grado is Ultimo,
+    !.  
+%si la cabeza es cero solo incrementamos el indice
+grado([0|Pol],Index,Ultimo,Grado):-
+    Index2 is Index+1,
+    grado(Pol,Index2,Ultimo,Grado),
+    !.
+%si no es cero setteamos ultimo al indice actual
+grado([_|Pol],Index,_,Grado):-
+    Index2 is Index+1,
+    grado(Pol,Index2,Index,Grado),
+    !.
+
+
 
 %EVALUAR
 eval_pol([],_,0).
@@ -145,5 +161,3 @@ main.
 %PREGUNTAS PROF:
 % el toString tiene que imprimir o 'regresar' la cadena
 % el toString va de mayor a menor coeficiente o como lo tenemos nosotros?
-
-
